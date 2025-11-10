@@ -1,0 +1,134 @@
+/* ===== CDT STATUS BADGE ===== */
+.cdt-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-family: 'Inter', -apple-system, sans-serif;
+    white-space: nowrap;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.cdt-status-badge::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 6px currentColor;
+}
+
+.status-icon {
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+}
+
+.status-label {
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Draft - Gris */
+.status-draft {
+    background: linear-gradient(135deg, #9E9E9E 0%, #BDBDBD 100%);
+    color: #FFFFFF;
+}
+
+.status-draft:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(158, 158, 158, 0.4);
+}
+
+/* Pending - Naranja */
+.status-pending {
+    background: linear-gradient(135deg, #FFA726 0%, #FFB74D 100%);
+    color: #FFFFFF;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.03);
+        opacity: 0.95;
+    }
+}
+
+.status-pending:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 167, 38, 0.5);
+    animation: none;
+}
+
+/* Active - Verde Brillante */
+.status-active {
+    background: linear-gradient(135deg, #00C853 0%, #00E676 100%);
+    color: #FFFFFF;
+}
+
+.status-active:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 200, 83, 0.4);
+}
+
+/* Rejected - Rojo */
+.status-rejected {
+    background: linear-gradient(135deg, #EF5350 0%, #E57373 100%);
+    color: #FFFFFF;
+}
+
+.status-rejected:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 83, 80, 0.4);
+}
+
+/* Completed - Azul */
+.status-completed {
+    background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+    color: #FFFFFF;
+}
+
+.status-completed:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+}
+
+/* Cancelled - Naranja oscuro */
+.status-cancelled {
+    background: linear-gradient(135deg, #FF6F00 0%, #FF8F00 100%);
+    color: #FFFFFF;
+}
+
+.status-cancelled:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 111, 0, 0.4);
+}
+
+/* Unknown - Gris claro */
+.status-unknown {
+    background: linear-gradient(135deg, #BDBDBD 0%, #9E9E9E 100%);
+    color: #FFFFFF;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .cdt-status-badge {
+        font-size: 11px;
+        padding: 4px 10px;
+        gap: 4px;
+    }
+    
+    .status-icon {
+        font-size: 12px;
+    }
+}

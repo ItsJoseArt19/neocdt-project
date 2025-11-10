@@ -34,7 +34,7 @@ const CanalesAtencion = () => {
         {
             id: 3,
             titulo: "Correo Electrónico",
-            descripcion: "Envíanos y te responderemos en máximo 24 horas",
+            descripcion: "Envíanos tus consultas y te responderemos en máximo 24 horas",
             email: "atencion@neobank.com.co",
             horario: "Respuesta en 24 horas",
             icon: "📧",
@@ -100,7 +100,7 @@ const CanalesAtencion = () => {
                     </Link>
                     <div className="header-content">
                         <h1>Canales de Atención</h1>
-                        <p></p>
+                        <p>Estamos aquí para ayudarte. Elige el canal que mejor se adapte a tus necesidades.</p>
                     </div>
                 </div>
 
@@ -117,28 +117,28 @@ const CanalesAtencion = () => {
                                 
                                 <div className="canal-details">
                                     {canal.telefono && (
-                                        <div className="canal-detail-item">
+                                        <div className="detail-item">
                                             <strong>📞 Teléfono:</strong>
                                             <a href={`tel:${canal.telefono}`}>{canal.telefono}</a>
                                         </div>
                                     )}
                                     
                                     {canal.email && (
-                                        <div className="canal-detail-item">
+                                        <div className="detail-item">
                                             <strong>📧 Email:</strong>
                                             <a href={`mailto:${canal.email}`}>{canal.email}</a>
                                         </div>
                                     )}
                                     
                                     {canal.direccion && (
-                                        <div className="canal-detail-item">
+                                        <div className="detail-item">
                                             <strong>📍 Dirección:</strong>
                                             <span>{canal.direccion}</span>
                                         </div>
                                     )}
                                     
                                     {canal.redes && (
-                                        <div className="canal-detail-item">
+                                        <div className="detail-item">
                                             <strong>🌐 Redes:</strong>
                                             <div className="redes-list">
                                                 {canal.redes.map(red => (
@@ -148,7 +148,7 @@ const CanalesAtencion = () => {
                                         </div>
                                     )}
                                     
-                                    <div className="canal-detail-item horario">
+                                    <div className="detail-item horario">
                                         <strong>🕒 Horario:</strong>
                                         <span>{canal.horario}</span>
                                     </div>

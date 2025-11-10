@@ -1,0 +1,17 @@
+# Para proyectos Node.js
+node_modules/
+.env
+.env.local
+.env.development
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de IDE
+.vscode/
+.idea/
+
+# Carpetas de compilación
+/dist
+/build

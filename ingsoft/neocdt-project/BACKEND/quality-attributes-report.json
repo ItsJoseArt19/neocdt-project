@@ -1,0 +1,201 @@
+{
+  "timestamp": "2025-11-10T01:08:57.245Z",
+  "overallScore": "31.25",
+  "results": {
+    "security": {
+      "score": 0,
+      "issues": [
+        {
+          "category": "A03:2021 - Injection",
+          "description": "Posible Command Injection: exec(, exec(, exec(, exec(, exec(",
+          "file": "config\\database.js",
+          "severity": "CRITICAL"
+        },
+        {
+          "category": "A09:2021 - Logging Failures",
+          "description": "Datos sensibles en logs",
+          "file": "database\\make-admin.js",
+          "severity": "MEDIUM"
+        },
+        {
+          "category": "A03:2021 - Injection",
+          "description": "Posible Command Injection: exec(",
+          "file": "database\\migrations\\add-cdt-admin-fields.js",
+          "severity": "CRITICAL"
+        },
+        {
+          "category": "A03:2021 - Injection",
+          "description": "Posible SQL Injection detectada",
+          "file": "models\\cdtModel.js",
+          "severity": "CRITICAL"
+        },
+        {
+          "category": "A03:2021 - Injection",
+          "description": "Posible SQL Injection detectada",
+          "file": "models\\userModel.js",
+          "severity": "CRITICAL"
+        },
+        {
+          "category": "A01:2021 - Broken Access Control",
+          "description": "Rutas POST/PUT/DELETE sin protección CSRF",
+          "file": "routes\\authRoutes.js",
+          "severity": "HIGH"
+        },
+        {
+          "category": "A01:2021 - Broken Access Control",
+          "description": "Rutas POST/PUT/DELETE sin protección CSRF",
+          "file": "routes\\cdtRoutes.js",
+          "severity": "HIGH"
+        },
+        {
+          "category": "A01:2021 - Broken Access Control",
+          "description": "Rutas POST/PUT/DELETE sin protección CSRF",
+          "file": "routes\\userRoutes.js",
+          "severity": "HIGH"
+        }
+      ],
+      "recommendations": [
+        "🔧 Implementar CSRF protection en rutas POST/PUT/DELETE",
+        "🔧 Usar bcrypt/argon2 para hashing de passwords",
+        "🔧 Validar y sanitizar todas las entradas de usuario",
+        "🔧 Usar variables de entorno para secretos",
+        "🔧 Implementar rate limiting",
+        "🔧 Usar helmet.js para headers de seguridad"
+      ]
+    },
+    "performance": {
+      "score": 70,
+      "issues": [
+        {
+          "category": "Inefficient Queries",
+          "description": "Queries SELECT * o findAll() detectadas",
+          "file": "database\\seeds\\create-admin.js",
+          "severity": "MEDIUM"
+        },
+        {
+          "category": "Inefficient Queries",
+          "description": "Queries SELECT * o findAll() detectadas",
+          "file": "database\\viewDatabase.js",
+          "severity": "MEDIUM"
+        },
+        {
+          "category": "Inefficient Queries",
+          "description": "Queries SELECT * o findAll() detectadas",
+          "file": "models\\cdtModel.js",
+          "severity": "MEDIUM"
+        },
+        {
+          "category": "Missing Indexes",
+          "description": "Múltiples WHEREs sin índices explícitos",
+          "file": "models\\cdtModel.js",
+          "severity": "LOW"
+        },
+        {
+          "category": "Missing Indexes",
+          "description": "Múltiples WHEREs sin índices explícitos",
+          "file": "models\\userModel.js",
+          "severity": "LOW"
+        }
+      ],
+      "recommendations": [
+        "⚡ Implementar eager loading para relaciones",
+        "⚡ Usar operaciones asíncronas (async/await)",
+        "⚡ Crear índices para columnas frecuentemente consultadas",
+        "⚡ Implementar caching (Redis/Memory Cache)",
+        "⚡ Limitar resultados con paginación",
+        "⚡ Usar connection pooling"
+      ]
+    },
+    "maintainability": {
+      "score": 0,
+      "metrics": {
+        "totalLOC": 4334,
+        "commentRatio": "19.50%",
+        "totalFunctions": 132,
+        "complexFunctions": 9,
+        "longFunctions": 7,
+        "largeFiles": 4,
+        "avgComplexityRatio": "6.82%"
+      },
+      "recommendations": [
+        "MEDIUM: Archivo muy largo: 304 líneas (max: 300) en config\\financialRules.js",
+        "MEDIUM: Archivo muy largo: 479 líneas (max: 300) en controllers\\cdtController.js",
+        "MEDIUM: Archivo muy largo: 752 líneas (max: 300) en models\\cdtModel.js",
+        "MEDIUM: Archivo muy largo: 668 líneas (max: 300) en services\\cdtService.js",
+        "🔀 Refactorizar funciones complejas (complexity > 10)",
+        "✂️ Dividir funciones largas en funciones más pequeñas",
+        "📦 Dividir archivos grandes en módulos más pequeños",
+        "📐 Seguir principios SOLID",
+        "🎯 Mantener Single Responsibility Principle"
+      ]
+    },
+    "scalability": {
+      "score": 100,
+      "issues": [],
+      "recommendations": [
+        "📊 Implementar paginación en todos los endpoints de listado",
+        "🔄 Usar colas para procesamiento asíncrono (Bull/RabbitMQ)",
+        "💾 Implementar caching distribuido (Redis)",
+        "⚖️ Diseñar para stateless servers",
+        "🌐 Usar CDN para assets estáticos",
+        "📡 Implementar health checks y metrics"
+      ]
+    },
+    "reliability": {
+      "score": 15,
+      "issues": [
+        {
+          "category": "Missing Input Validation",
+          "description": "Archivo sin validaciones de entrada aparentes",
+          "file": "config\\env.js",
+          "severity": "MEDIUM"
+        },
+        {
+          "category": "Missing Input Validation",
+          "description": "Archivo sin validaciones de entrada aparentes",
+          "file": "middlewares\\csrfProtection.js",
+          "severity": "MEDIUM"
+        },
+        {
+          "category": "Missing Input Validation",
+          "description": "Archivo sin validaciones de entrada aparentes",
+          "file": "middlewares\\rateLimiter.js",
+          "severity": "MEDIUM"
+        },
+        {
+          "category": "Missing Input Validation",
+          "description": "Archivo sin validaciones de entrada aparentes",
+          "file": "routes\\authRoutes.js",
+          "severity": "MEDIUM"
+        },
+        {
+          "category": "Missing Input Validation",
+          "description": "Archivo sin validaciones de entrada aparentes",
+          "file": "routes\\cacheRoutes.js",
+          "severity": "MEDIUM"
+        },
+        {
+          "category": "Missing Input Validation",
+          "description": "Archivo sin validaciones de entrada aparentes",
+          "file": "routes\\cdtRoutes.js",
+          "severity": "MEDIUM"
+        },
+        {
+          "category": "Missing Input Validation",
+          "description": "Archivo sin validaciones de entrada aparentes",
+          "file": "routes\\userRoutes.js",
+          "severity": "MEDIUM"
+        }
+      ],
+      "recommendations": [
+        "✅ Implementar try-catch en todas las funciones async",
+        "🔍 Validar todas las entradas de usuario",
+        "📋 Usar middleware de validación (express-validator)",
+        "🚨 Implementar logging de errores centralizado",
+        "🔄 Implementar retry logic para operaciones críticas",
+        "💾 Implementar backups automáticos de BD"
+      ],
+      "errorHandlingRatio": "60.61%"
+    }
+  }
+}
