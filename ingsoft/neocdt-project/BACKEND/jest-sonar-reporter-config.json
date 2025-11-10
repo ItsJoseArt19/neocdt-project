@@ -1,7 +1,0 @@
-{
-  "sonarQubeReporter": {
-    "outputDir": "reports",
-    "outputName": "test-report.xml",
-    "reportPath": "reports/test-report.xml"
-  }
-}
