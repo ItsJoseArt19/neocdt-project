@@ -1,0 +1,21 @@
+node_modules/
+.env
+.env.local
+.env.*.local
+dist/
+build/
+coverage/
+*.log
+.DS_Store
+.vscode/
+.idea/
+
+# SQLite Database
+src/database/*.db
+src/database/*.db-shm
+src/database/*.db-wal
+src/database/backups/*.db
+
+# Keep directory structure
+!src/database/.gitkeep
+!src/database/backups/.gitkeep

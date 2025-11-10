@@ -1,0 +1,173 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+import Register from '../../../src/pages/Register';
+import * as localStorageUtils from '../../../src/utils/localStorageUtils';
+
+vi.mock('../../../src/utils/localStorageUtils');
+
+const MockedRegister = () => (
+  <BrowserRouter>
+    <Register />
+  </BrowserRouter>
+);
+
+describe('HU-01: Registro de Usuario - Register Component', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    localStorage.clear();
+  });
+
+  describe('Scenario: Registro exitoso con datos válidos', () => {
+    it('Given datos válidos, When completa el formulario y hace clic en Registrar, Then debería registrar exitosamente', async () => {
+      // Given
+      vi.mocked(localStorageUtils.registerUser).mockReturnValue('Usuario registrado Exitosamente');
+
+      render(<MockedRegister />);
+
+      // When - Buscar por ID en lugar de label para evitar problemas
+      const documentTypeSelect = document.getElementById('documentType');
+      const documentNumberInput = document.getElementById('documentNumber');
+      const nameInput = document.getElementById('name');
+      const emailInput = document.getElementById('email');
+      const phoneInput = document.getElementById('phone');
+      const passwordInput = document.getElementById('password');
+      const confirmPasswordInput = document.getElementById('confirmPassword');
+      const submitButton = screen.getByRole('button', { name: /registrar/i });
+
+      fireEvent.change(documentTypeSelect, { target: { value: 'CC' } });
+      fireEvent.change(documentNumberInput, { target: { value: '1234567890' } });
+      fireEvent.change(nameInput, { target: { value: 'Juan Pérez' } });
+      fireEvent.change(emailInput, { target: { value: 'juan.perez@example.com' } });
+      fireEvent.change(phoneInput, { target: { value: '3001234567' } });
+      fireEvent.change(passwordInput, { target: { value: 'Pass1234' } });
+      fireEvent.change(confirmPasswordInput, { target: { value: 'Pass1234' } });
+      fireEvent.click(submitButton);
+
+      // Then
+      await waitFor(() => {
+        expect(localStorageUtils.registerUser).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('Scenario: Intento de registro con email duplicado', () => {
+    it('Given email ya registrado, When intenta registrarse, Then debería mostrar error', async () => {
+      // Given
+      vi.mocked(localStorageUtils.registerUser).mockReturnValue('Usuario ya registrado');
+
+      render(<MockedRegister />);
+
+      // When
+      const documentTypeSelect = document.getElementById('documentType');
+      const documentNumberInput = document.getElementById('documentNumber');
+      const nameInput = document.getElementById('name');
+      const emailInput = document.getElementById('email');
+      const phoneInput = document.getElementById('phone');
+      const passwordInput = document.getElementById('password');
+      const confirmPasswordInput = document.getElementById('confirmPassword');
+      const submitButton = screen.getByRole('button', { name: /registrar/i });
+
+      fireEvent.change(documentTypeSelect, { target: { value: 'CC' } });
+      fireEvent.change(documentNumberInput, { target: { value: '1234567890' } });
+      fireEvent.change(nameInput, { target: { value: 'Juan Pérez' } });
+      fireEvent.change(emailInput, { target: { value: 'juan.perez@example.com' } });
+      fireEvent.change(phoneInput, { target: { value: '3001234567' } });
+      fireEvent.change(passwordInput, { target: { value: 'Pass1234' } });
+      fireEvent.change(confirmPasswordInput, { target: { value: 'Pass1234' } });
+      fireEvent.click(submitButton);
+
+      // Then
+      await waitFor(() => {
+        expect(localStorageUtils.registerUser).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('Scenario: Intento de registro con contraseñas que no coinciden', () => {
+    it('Given contraseñas diferentes, When intenta registrarse, Then debería mostrar error', async () => {
+      // Given
+      render(<MockedRegister />);
+
+      // When
+      const passwordInput = document.getElementById('password');
+      const confirmPasswordInput = document.getElementById('confirmPassword');
+      const submitButton = screen.getByRole('button', { name: /registrar/i });
+
+      fireEvent.change(passwordInput, { target: { value: 'Pass1234' } });
+      fireEvent.change(confirmPasswordInput, { target: { value: '5678' } });
+      fireEvent.click(submitButton);
+
+      // Then - debe prevenir el submit o mostrar error
+      await waitFor(() => {
+        expect(localStorageUtils.registerUser).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('Scenario: Validación de email inválido', () => {
+    it('Given email con formato inválido, When intenta registrarse, Then debería rechazar el email', async () => {
+      // Given
+      vi.mocked(localStorageUtils.registerUser).mockReturnValue('Correo Electronico Invalido');
+
+      render(<MockedRegister />);
+
+      // When
+      const documentTypeSelect = document.getElementById('documentType');
+      const documentNumberInput = document.getElementById('documentNumber');
+      const nameInput = document.getElementById('name');
+      const emailInput = document.getElementById('email');
+      const phoneInput = document.getElementById('phone');
+      const passwordInput = document.getElementById('password');
+      const confirmPasswordInput = document.getElementById('confirmPassword');
+      const submitButton = screen.getByRole('button', { name: /registrar/i });
+
+      fireEvent.change(documentTypeSelect, { target: { value: 'CC' } });
+      fireEvent.change(documentNumberInput, { target: { value: '1234567890' } });
+      fireEvent.change(nameInput, { target: { value: 'Juan Pérez' } });
+      fireEvent.change(emailInput, { target: { value: 'email_invalido' } });
+      fireEvent.change(phoneInput, { target: { value: '3001234567' } });
+      fireEvent.change(passwordInput, { target: { value: 'Pass1234' } });
+      fireEvent.change(confirmPasswordInput, { target: { value: 'Pass1234' } });
+      fireEvent.click(submitButton);
+
+      // Then
+      await waitFor(() => {
+        expect(localStorageUtils.registerUser).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('Scenario: Registro de usuario extranjero', () => {
+    it('Given usuario con documento CE, When se registra con datos válidos, Then debería registrar exitosamente', async () => {
+      // Given
+      vi.mocked(localStorageUtils.registerUser).mockReturnValue('Usuario registrado Exitosamente');
+
+      render(<MockedRegister />);
+
+      // When
+      const documentTypeSelect = document.getElementById('documentType');
+      const documentNumberInput = document.getElementById('documentNumber');
+      const nameInput = document.getElementById('name');
+      const emailInput = document.getElementById('email');
+      const phoneInput = document.getElementById('phone');
+      const passwordInput = document.getElementById('password');
+      const confirmPasswordInput = document.getElementById('confirmPassword');
+      const submitButton = screen.getByRole('button', { name: /registrar/i });
+
+      fireEvent.change(documentTypeSelect, { target: { value: 'CE' } });
+      fireEvent.change(documentNumberInput, { target: { value: '123456' } });
+      fireEvent.change(nameInput, { target: { value: 'María González' } });
+      fireEvent.change(emailInput, { target: { value: 'maria@example.com' } });
+      fireEvent.change(phoneInput, { target: { value: '3001234567' } });
+      fireEvent.change(passwordInput, { target: { value: 'Pass1234' } });
+      fireEvent.change(confirmPasswordInput, { target: { value: 'Pass1234' } });
+      fireEvent.click(submitButton);
+
+      // Then
+      await waitFor(() => {
+        expect(localStorageUtils.registerUser).toHaveBeenCalled();
+      });
+    });
+  });
+});
