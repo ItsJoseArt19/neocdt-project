@@ -9,6 +9,7 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
+import '../styles/transparencia.css';
 
 const Transparencia = () => {
     // ===== CONFIGURACIÓN DE DOCUMENTOS LEGALES =====
@@ -158,7 +159,10 @@ const Transparencia = () => {
                     </Link>
                     <div className="header-content">
                         <h1>Transparencia y Buen Gobierno</h1>
-                        <p></p>
+                        <p>
+                            En NeoBank creemos en la transparencia como pilar fundamental de la confianza. 
+                            Aquí encontrarás toda la información relevante sobre nuestra gestión, estados financieros y marco regulatorio.
+                        </p>
                     </div>
                 </div>
 
@@ -241,7 +245,7 @@ const Transparencia = () => {
                                     <p><strong>Vigencia:</strong> {cert.vigencia}</p>
                                 </div>
                                 <div className="cert-status">
-                                    Activa
+                                    ✅ Activa
                                 </div>
                             </div>
                         ))}

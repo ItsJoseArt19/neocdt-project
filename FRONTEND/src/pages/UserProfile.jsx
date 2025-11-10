@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { getUserCDTs } from "../utils/api";
+import '../styles/profile-account.css';
 
 const UserProfile = () => {
 
@@ -44,6 +46,10 @@ const UserProfile = () => {
     };
 
     useEffect(() => {
+        loadProfileData();
+    }, [navigate]);
+
+    const loadProfileData = async () => {
         const user = localStorage.getItem("currentUser");
         if (!user) {
             navigate("/");
@@ -66,10 +72,15 @@ const UserProfile = () => {
         const completion = calculateProfileCompletion(initialFormData);
         setProfileCompletion(completion);
 
-        const allCDTs = JSON.parse(localStorage.getItem("userCDTs") || "[]");
-        const userSpecificCDTs = allCDTs.filter(cdt => cdt.userId === userData.documentNumber);
-        setUserCDTs(userSpecificCDTs);
-    }, [navigate]);
+        // Obtener CDTs desde el backend
+        try {
+            const response = await getUserCDTs();
+            setUserCDTs(response.cdts || []);
+        } catch (error) {
+            console.error('Error al cargar CDTs:', error);
+            setUserCDTs([]);
+        }
+    };
 
     const handleInputChange = (field, value) => {
         setFormData(prev => ({

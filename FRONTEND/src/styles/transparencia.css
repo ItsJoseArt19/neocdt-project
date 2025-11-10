@@ -1,0 +1,805 @@
+/* ===== TRANSPARENCIA PAGE - DISEÑO ESPECTACULAR ===== */
+.transparencia-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8f5e9 100%);
+  padding-top: 8rem;
+  padding-bottom: 3rem;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.transparencia-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 500px;
+  background: linear-gradient(135deg, rgba(52, 168, 83, 0.05) 0%, rgba(46, 125, 50, 0.08) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.transparencia-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== HEADER SECTION ===== */
+.transparencia-header {
+  margin-bottom: 4rem;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #34a853;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  margin-bottom: 2rem;
+  transition: all 0.3s ease;
+  padding: 0.75rem 1.25rem;
+  background: white;
+  border-radius: 12px;
+  border: 2px solid transparent;
+}
+
+.back-button:hover {
+  gap: 0.75rem;
+  border-color: #34a853;
+  transform: translateX(-4px);
+  box-shadow: 0 4px 12px rgba(52, 168, 83, 0.15);
+}
+
+.header-content {
+  text-align: center;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.header-content h1 {
+  font-size: 3rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #2e7d32 0%, #34a853 50%, #4caf50 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+}
+
+.header-content p {
+  font-size: 1.25rem;
+  color: #5f6368;
+  line-height: 1.7;
+  font-weight: 500;
+}
+
+/* ===== SECTIONS BASE ===== */
+.indicadores-section,
+.documentos-section,
+.certificaciones-section,
+.gobierno-section,
+.compromiso-section,
+.contacto-transparencia {
+  margin-bottom: 4rem;
+}
+
+.indicadores-section h2,
+.documentos-section h2,
+.certificaciones-section h2,
+.gobierno-section h2,
+.compromiso-section h2 {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #202124;
+  margin-bottom: 0.75rem;
+  text-align: center;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.indicadores-section > p,
+.documentos-section > p,
+.certificaciones-section > p {
+  text-align: center;
+  font-size: 1.125rem;
+  color: #5f6368;
+  margin-bottom: 2.5rem;
+  font-weight: 500;
+}
+
+/* ===== INDICADORES FINANCIEROS ===== */
+.indicadores-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  animation: fadeInUp 0.6s ease-out 0.2s backwards;
+}
+
+.indicador-card {
+  background: white;
+  border-radius: 24px;
+  padding: 2.5rem;
+  box-shadow: 0 8px 32px rgba(52, 168, 83, 0.12);
+  border: 2px solid transparent;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.indicador-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, #34a853 0%, #4caf50 100%);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+
+.indicador-card:hover {
+  border-color: rgba(52, 168, 83, 0.2);
+  box-shadow: 0 12px 48px rgba(52, 168, 83, 0.18);
+  transform: translateY(-8px);
+}
+
+.indicador-card:hover::before {
+  transform: scaleX(1);
+}
+
+.indicador-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.status-icon {
+  font-size: 1.5rem;
+}
+
+.indicador-header h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #202124;
+  margin: 0;
+}
+
+.indicador-valor {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  line-height: 1;
+  background: linear-gradient(135deg, #2e7d32 0%, #34a853 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.indicador-descripcion {
+  font-size: 0.95rem;
+  color: #5f6368;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.indicador-meta {
+  padding-top: 1rem;
+  border-top: 2px solid #f5f5f5;
+}
+
+.indicador-meta small {
+  font-size: 0.875rem;
+  color: #5f6368;
+}
+
+.indicador-meta strong {
+  color: #202124;
+}
+
+/* ===== DOCUMENTOS SECTION ===== */
+.categoria-seccion {
+  margin-bottom: 3rem;
+  animation: fadeInUp 0.6s ease-out backwards;
+}
+
+.categoria-seccion:nth-child(2) { animation-delay: 0.1s; }
+.categoria-seccion:nth-child(3) { animation-delay: 0.2s; }
+.categoria-seccion:nth-child(4) { animation-delay: 0.3s; }
+
+.categoria-titulo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2e7d32;
+  margin-bottom: 1.5rem;
+  padding-left: 1rem;
+  border-left: 4px solid #34a853;
+}
+
+.documentos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.documento-card {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(52, 168, 83, 0.1);
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.documento-card:hover {
+  border-color: #34a853;
+  box-shadow: 0 8px 32px rgba(52, 168, 83, 0.15);
+  transform: translateY(-4px);
+}
+
+.documento-icon {
+  font-size: 2.5rem;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f8fdf9 0%, #e8f5e9 100%);
+  border-radius: 16px;
+  border: 2px solid rgba(52, 168, 83, 0.15);
+}
+
+.documento-content h4 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #202124;
+  margin: 0 0 0.5rem 0;
+}
+
+.documento-content p {
+  font-size: 0.95rem;
+  color: #5f6368;
+  line-height: 1.5;
+  margin: 0 0 1rem 0;
+}
+
+.documento-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.875rem;
+  color: #5f6368;
+}
+
+.documento-meta span {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.documento-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: auto;
+}
+
+.btn-descargar,
+.btn-ver {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-descargar {
+  background: linear-gradient(135deg, #34a853 0%, #4caf50 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(52, 168, 83, 0.25);
+}
+
+.btn-descargar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(52, 168, 83, 0.35);
+}
+
+.btn-ver {
+  background: white;
+  color: #34a853;
+  border: 2px solid #34a853;
+}
+
+.btn-ver:hover {
+  background: #34a853;
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* ===== CERTIFICACIONES ===== */
+.certificaciones-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  animation: fadeInUp 0.6s ease-out 0.2s backwards;
+}
+
+.certificacion-card {
+  background: white;
+  border-radius: 24px;
+  padding: 2.5rem;
+  box-shadow: 0 8px 32px rgba(52, 168, 83, 0.12);
+  border: 2px solid transparent;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.5rem;
+}
+
+.certificacion-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, #34a853 0%, #4caf50 100%);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+
+.certificacion-card:hover {
+  border-color: rgba(52, 168, 83, 0.3);
+  box-shadow: 0 12px 48px rgba(52, 168, 83, 0.18);
+  transform: translateY(-8px);
+}
+
+.certificacion-card:hover::before {
+  transform: scaleX(1);
+}
+
+.cert-icon {
+  font-size: 4rem;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #34a853 0%, #4caf50 100%);
+  border-radius: 50%;
+  box-shadow: 0 8px 24px rgba(52, 168, 83, 0.3);
+  animation: float 6s ease-in-out infinite;
+}
+
+.cert-content {
+  flex: 1;
+}
+
+.cert-content h4 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #202124;
+  margin: 0 0 1rem 0;
+}
+
+.cert-content p {
+  font-size: 0.95rem;
+  color: #5f6368;
+  margin: 0.5rem 0;
+  line-height: 1.5;
+}
+
+.cert-content strong {
+  color: #202124;
+}
+
+.cert-status {
+  padding: 0.625rem 1.5rem;
+  background: linear-gradient(135deg, rgba(52, 168, 83, 0.15) 0%, rgba(76, 175, 80, 0.15) 100%);
+  border: 2px solid rgba(52, 168, 83, 0.3);
+  border-radius: 20px;
+  color: #2e7d32;
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+/* ===== GOBIERNO CORPORATIVO ===== */
+.gobierno-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+  animation: fadeInUp 0.6s ease-out 0.2s backwards;
+}
+
+.gobierno-card {
+  background: white;
+  border-radius: 24px;
+  padding: 2.5rem;
+  box-shadow: 0 8px 32px rgba(52, 168, 83, 0.12);
+  border: 2px solid transparent;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.gobierno-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, #34a853 0%, #4caf50 100%);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+
+.gobierno-card:hover {
+  border-color: rgba(52, 168, 83, 0.2);
+  box-shadow: 0 12px 48px rgba(52, 168, 83, 0.18);
+  transform: translateY(-8px);
+}
+
+.gobierno-card:hover::before {
+  transform: scaleX(1);
+}
+
+.gobierno-card .card-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.card-icon {
+  font-size: 2.5rem;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f8fdf9 0%, #e8f5e9 100%);
+  border-radius: 16px;
+  border: 2px solid rgba(52, 168, 83, 0.2);
+}
+
+.gobierno-card h3 {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: #202124;
+  margin: 0;
+}
+
+.gobierno-card .card-content p {
+  font-size: 1rem;
+  color: #5f6368;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.gobierno-card ul {
+  margin: 0;
+  padding-left: 1.5rem;
+  list-style-type: none;
+}
+
+.gobierno-card li {
+  font-size: 0.95rem;
+  color: #202124;
+  margin-bottom: 0.75rem;
+  padding-left: 1.5rem;
+  position: relative;
+  font-weight: 500;
+}
+
+.gobierno-card li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: #34a853;
+  font-weight: 800;
+  font-size: 1.125rem;
+}
+
+/* ===== COMPROMISO SECTION ===== */
+.compromiso-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  animation: fadeInUp 0.6s ease-out 0.2s backwards;
+}
+
+.compromiso-item {
+  background: white;
+  border-radius: 20px;
+  padding: 2.5rem;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(52, 168, 83, 0.1);
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.compromiso-item:hover {
+  border-color: #34a853;
+  box-shadow: 0 8px 32px rgba(52, 168, 83, 0.15);
+  transform: translateY(-8px);
+}
+
+.compromiso-icon {
+  font-size: 3.5rem;
+  margin-bottom: 1.5rem;
+  animation: bounce 2s infinite;
+}
+
+.compromiso-item h4 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #202124;
+  margin: 0 0 1rem 0;
+}
+
+.compromiso-item p {
+  font-size: 0.95rem;
+  color: #5f6368;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ===== CONTACTO SECTION ===== */
+.contacto-transparencia {
+  background: linear-gradient(135deg, #34a853 0%, #4caf50 100%);
+  border-radius: 32px;
+  padding: 3rem;
+  box-shadow: 0 12px 40px rgba(52, 168, 83, 0.3);
+  position: relative;
+  overflow: hidden;
+  animation: fadeInUp 0.6s ease-out 0.3s backwards;
+}
+
+.contacto-transparencia::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 400px;
+  height: 400px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.contacto-content {
+  position: relative;
+  z-index: 1;
+  color: white;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.contacto-content h3 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0 0 1rem 0;
+  color: white;
+}
+
+.contacto-content > p {
+  font-size: 1.125rem;
+  margin-bottom: 2rem;
+  opacity: 0.95;
+  line-height: 1.6;
+}
+
+.contacto-details {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  flex-wrap: wrap;
+}
+
+.contacto-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.contacto-item strong {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: white;
+  opacity: 0.9;
+}
+
+.contacto-item a {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: white;
+  text-decoration: none;
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.contacto-item a:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1024px) {
+  .indicadores-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .documentos-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .gobierno-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .transparencia-page {
+    padding-top: 6rem;
+    padding-bottom: 2rem;
+  }
+  
+  .transparencia-container {
+    padding: 0 1rem;
+  }
+  
+  .header-content h1 {
+    font-size: 2.25rem;
+  }
+  
+  .header-content p {
+    font-size: 1.05rem;
+  }
+  
+  .indicadores-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .indicadores-section h2,
+  .documentos-section h2,
+  .certificaciones-section h2,
+  .gobierno-section h2,
+  .compromiso-section h2 {
+    font-size: 1.75rem;
+  }
+  
+  .indicador-card,
+  .certificacion-card,
+  .gobierno-card {
+    padding: 2rem 1.5rem;
+  }
+  
+  .documento-card {
+    padding: 1.5rem;
+  }
+  
+  .compromiso-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .contacto-transparencia {
+    padding: 2rem 1.5rem;
+  }
+  
+  .contacto-details {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-content h1 {
+    font-size: 1.875rem;
+  }
+  
+  .indicador-valor {
+    font-size: 2.5rem;
+  }
+  
+  .cert-icon {
+    width: 80px;
+    height: 80px;
+    font-size: 3rem;
+  }
+  
+  .card-icon {
+    width: 52px;
+    height: 52px;
+    font-size: 2rem;
+  }
+  
+  .compromiso-icon {
+    font-size: 3rem;
+  }
+  
+  .contacto-content h3 {
+    font-size: 1.5rem;
+  }
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
