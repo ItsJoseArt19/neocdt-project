@@ -1,4 +1,0 @@
-Modificar Monto:
-javascript:(function(){const amount=prompt('Ingresa el nuevo monto disponible:');if(amount){const currentUser=JSON.parse(localStorage.getItem('currentUser'));if(currentUser){const users=JSON.parse(localStorage.getItem('users'))||[];const userIndex=users.findIndex(u=>u.documentNumber===currentUser.documentNumber);if(userIndex>=0){const newAmount=parseFloat(amount);if(!isNaN(newAmount)&&newAmount>=0){users[userIndex].availableFunds=newAmount;localStorage.setItem('users',JSON.stringify(users));currentUser.availableFunds=newAmount;localStorage.setItem('currentUser',JSON.stringify(currentUser));alert(`Fondos actualizados a ${newAmount.toLocaleString('es-CO',{style:'currency',currency:'COP',minimumFractionDigits:0})}`);location.reload();}else{alert('Por favor ingresa un número válido mayor o igual a cero')}}else{alert('Usuario no encontrado')}}else{alert('Necesitas iniciar sesión primero')}}})();
-
-Se ingresa ese codigo y se modifica el Disponible
