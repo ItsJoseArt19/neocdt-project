@@ -193,7 +193,7 @@
     text-align: left;
 }
 
-.dropdown-item:hover:not(:disabled) {
+.dropdown-item:hover {
     background: var(--gray-50);
     transform: translateX(4px);
 }
