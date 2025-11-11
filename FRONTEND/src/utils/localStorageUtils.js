@@ -14,7 +14,7 @@ export const validateDocumentNumber = (type, number) => {
     if (type === "CC") {
         return /^\d{10}$/.test(number);
     } else if (type === "CE") {
-        return /^\d{6-10}$/.test(number);
+        return /^\d{6,10}$/.test(number);
     }
     return false;
 };

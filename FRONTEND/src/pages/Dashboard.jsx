@@ -1,29 +1,44 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import {getAvailableFunds} from "../utils/localStorageUtils"
+import { getUserCDTs } from "../utils/api";
+import CDTStatusBadge from '../components/CDTStatusBadge';
 
 const Dashboard = () => {
     
     const [currentUser, setCurrentUser] = useState(null); // Usuario logueado
     const [userCDTs, setUserCDTs] = useState([]); // CDTs del usuario
-    const [availableFunds, setAvailableFunds] = useState(0); //Monto Dispoinible
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
     
     useEffect(() => {
-        // Obtener usuario actual desde localStorage
-        const user = localStorage.getItem("currentUser");
-        if (user) {
-            const userData = JSON.parse(user);
+        loadDashboardData();
+    }, []);
+
+    const loadDashboardData = async () => {
+        try {
+            setIsLoading(true);
+            setError(null);
+            
+            // Obtener usuario actual desde localStorage
+            const userStr = localStorage.getItem("currentUser");
+            if (!userStr) {
+                return;
+            }
+            
+            const userData = JSON.parse(userStr);
             setCurrentUser(userData);
             
-            // Obtener CDTs específicos del usuario
-            const cdts = JSON.parse(localStorage.getItem("userCDTs") || "[]");
-            const userSpecificCDTs = cdts.filter(cdt => cdt.userId === userData.documentNumber);
-            setUserCDTs(userSpecificCDTs);
-
-            const funds = getAvailableFunds(userData.documentNumber);
-            setAvailableFunds(funds);
+            // Obtener CDTs del backend
+            const response = await getUserCDTs();
+            setUserCDTs(response.cdts || []);
+            
+        } catch (error) {
+            console.error('Error al cargar datos del dashboard:', error);
+            setError('Error al cargar tus CDTs. Por favor, recarga la página.');
+        } finally {
+            setIsLoading(false);
         }
-    }, []);
+    };
 
     
     const formatCurrency = (amount) => {
@@ -36,15 +51,41 @@ const Dashboard = () => {
     };
 
     const calculateTotalInvestment = () => {
-        return userCDTs.reduce((total, cdt) => total + cdt.amount, 0);
+        // Solo contar CDTs con estado 'active'
+        return userCDTs
+            .filter(cdt => cdt.status === 'active')
+            .reduce((total, cdt) => total + cdt.amount, 0);
     };
 
     if (!currentUser) {
         return null; // El header se encargará de redirigir
     }
 
+    if (isLoading) {
+        return (
+            <div className="dashboard">
+                <div className="dashboard-container" style={{ textAlign: 'center', padding: '50px' }}>
+                    <p>Cargando tus inversiones...</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="dashboard">
+            {error && (
+                <div className="dashboard-error" style={{ 
+                    background: '#fee', 
+                    color: '#c33', 
+                    padding: '15px', 
+                    margin: '20px', 
+                    borderRadius: '8px',
+                    textAlign: 'center'
+                }}>
+                    {error}
+                </div>
+            )}
+            
             {/* Seccion principal */}
             <div className="dashboard-hero">
                 <div className="dashboard-container">
@@ -53,16 +94,16 @@ const Dashboard = () => {
                         <p>Bienvenido a tu banca digital. Gestiona tus inversiones y productos financieros.</p>
                     </div>
                     <div className="dashboard-summary">
-                        <div className="summary-card available-funds">
-                            <h3>Disponible</h3>
-                            <p className="amount">{formatCurrency(availableFunds)}</p>
-                        </div>
                         <div className="summary-card">
                             <h3>Total Invertido</h3>
                             <p className="amount">{formatCurrency(calculateTotalInvestment())}</p>
                         </div>
                         <div className="summary-card">
                             <h3>CDTs Activos</h3>
+                            <p className="count">{userCDTs.filter(cdt => cdt.status === 'active').length}</p>
+                        </div>
+                        <div className="summary-card">
+                            <h3>Total CDTs</h3>
                             <p className="count">{userCDTs.length}</p>
                         </div>
                         <div className="summary-card">
@@ -132,39 +173,42 @@ const Dashboard = () => {
 
                     {userCDTs.length > 0 ? (
                         <div className="cdts-grid">
-                            {userCDTs.map((cdt, index) => (
-                                <Link key={cdt.id || `cdt-${index}-${cdt.amount}`} 
-                                      to={`/cdt/${cdt.id}`} 
-                                      className="cdt-card clickable">
-                                    <div className="cdt-header">
-                                        <h3>CDT #{cdt.id || (index + 1)}</h3>
-                                        <span className={`cdt-status ${cdt.status || 'active'}`}>
-                                            {cdt.status === 'active' ? 'Activo' : 'Vencido'}
-                                        </span>
+                            {userCDTs.map((cdt, index) => {
+                                return (
+                                    <div key={cdt.id || `cdt-${index}-${cdt.amount}`} className="cdt-card-wrapper">
+                                        <Link 
+                                            to={`/cdt/${cdt.id}`} 
+                                            className="cdt-card clickable"
+                                        >
+                                            <div className="cdt-header">
+                                                <h3>CDT #{cdt.id || (index + 1)}</h3>
+                                                <CDTStatusBadge status={cdt.status} />
+                                            </div>
+                                            <div className="cdt-details">
+                                                <div className="cdt-amount">
+                                                    <span>Monto Invertido: </span>
+                                                    <strong>{formatCurrency(cdt.amount)}</strong>
+                                                </div>
+                                                <div className="cdt-rate">
+                                                    <span>Rentabilidad: </span>
+                                                    <strong>{cdt.interestRate || 0}% EA</strong>
+                                                </div>
+                                                <div className="cdt-term">
+                                                    <span>Plazo: </span>
+                                                    <strong>{cdt.termDays || 0} días</strong>
+                                                </div>
+                                                <div className="cdt-maturity">
+                                                    <span>Vencimiento: </span>
+                                                    <strong>{cdt.endDate || 'N/A'}</strong>
+                                                </div>
+                                            </div>
+                                            <div className="cdt-actions">
+                                                <span className="view-details">Presiona Para ver Detalles</span>
+                                            </div>
+                                        </Link>
                                     </div>
-                                    <div className="cdt-details">
-                                        <div className="cdt-amount">
-                                            <span>Monto Invertido: </span>
-                                            <strong>{formatCurrency(cdt.amount)}</strong>
-                                        </div>
-                                        <div className="cdt-rate">
-                                            <span>Rentabilidad: </span>
-                                            <strong>{cdt.rate}% EA</strong>
-                                        </div>
-                                        <div className="cdt-term">
-                                            <span>Plazo: </span>
-                                            <strong>{cdt.term} días</strong>
-                                        </div>
-                                        <div className="cdt-maturity">
-                                            <span>Vencimiento: </span>
-                                            <strong>{cdt.maturityDate}</strong>
-                                        </div>
-                                    </div>
-                                    <div className="cdt-actions">
-                                        <span className="view-details">Presiona Para ver Detalles</span>
-                                    </div>
-                                </Link>
-                            ))}
+                                );
+                            })}
                         </div>
                     ) : (
                         <div className="empty-state">

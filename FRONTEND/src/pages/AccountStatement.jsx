@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import '../styles/estado-cuenta.css';
 
 const AccountStatement = () => {
     const [currentUser, setCurrentUser] = useState(null); // Usuario actual

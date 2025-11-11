@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { registerUser, getErrorMessage } from "../utils/api";
 
 const Register = () => {
     // ===== ESTADOS DEL FORMULARIO DE REGISTRO =====
@@ -11,7 +12,8 @@ const Register = () => {
         phone: "",             // Teléfono celular (sin el +57)
         nationality: "",       // Solo para CE
         residenceDate: "",     // Solo para CE
-        password: ""           // Contraseña de 4 dígitos
+        password: "",          // Contraseña (8+ caracteres)
+        confirmPassword: ""    // Confirmación de contraseña
     });
     
     const [error, setError] = useState("");           // Mensajes de error
@@ -32,7 +34,7 @@ const Register = () => {
         switch(field) {
             case 'documentNumber':
                 if (formData.documentType === "CC") {
-                    return /^\d{10}$/.test(value) ? "" : "Debe contener exactamente 10 dígitos numéricos";
+                    return /^\d{7,10}$/.test(value) ? "" : "Debe contener entre 7 y 10 dígitos numéricos";
                 } else {
                     return /^\d{6,9}$/.test(value) ? "" : "Debe contener entre 6 y 9 dígitos numéricos";
                 }
@@ -41,7 +43,16 @@ const Register = () => {
                 return /^[A-Za-zÁáÉéÍíÓóÚúÑñ\s]+$/.test(value) ? "" : "Solo se permiten letras y espacios";
                 
             case 'password':
-                return /^\d{4}$/.test(value) ? "" : "Debe contener exactamente 4 dígitos numéricos";
+                if (value.length < 8) return "La contraseña debe tener mínimo 8 caracteres";
+                if (!/[a-z]/.test(value)) return "Debe contener al menos una letra minúscula";
+                if (!/[A-Z]/.test(value)) return "Debe contener al menos una letra mayúscula";
+                if (!/\d/.test(value)) return "Debe contener al menos un número";
+                return "";
+            
+            case 'confirmPassword':
+                if (!value) return "Confirme su contraseña";
+                if (value !== formData.password) return "Las contraseñas no coinciden";
+                return "";
                 
             case 'email':
                 return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? "" : "Ingrese un correo electrónico válido";
@@ -73,13 +84,12 @@ const Register = () => {
             if (formData.documentType === "CC" && value.length > 10) {
                 return; // No permitir más de 10 dígitos para CC
             }
+            if (formData.documentType === "CE" && value.length > 9) {
+                return; // No permitir más de 9 dígitos para CE
+            }
             if (!/^\d*$/.test(value)) {
                 return; // Solo permitir dígitos
             }
-        } 
-        
-        if (field === 'password' && !/^\d*$/.test(value)) {
-            return; // Solo permitir dígitos en la clave
         }
         
         if (field === 'phone') {
@@ -132,7 +142,7 @@ const Register = () => {
         let newErrors = {};
         
         // Campos obligatorios para todos
-        const requiredFields = ['documentNumber', 'name', 'email', 'phone', 'password'];
+        const requiredFields = ['documentNumber', 'name', 'email', 'phone', 'password', 'confirmPassword'];
         
         // Campos adicionales según tipo de documento
         if (formData.documentType === "CE") {
@@ -155,192 +165,222 @@ const Register = () => {
         }
         
         setIsLoading(true);
+        setError("");
         
-        // Simular delay de red
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        const users = JSON.parse(localStorage.getItem("users")) || [];
-        
-        if (users.find((u) => u.documentNumber === formData.documentNumber)) {
-            setError("El documento ya está registrado.");
-        } else {
-            // Guardar usuario
-            users.push(formData);
-            localStorage.setItem("users", JSON.stringify(users));
+        try {
+            // Llamar al backend para registrar el usuario
+            await registerUser(formData);
             
-            // Redirigir al home para que haga login desde el header
-            navigate("/");
+            // Registro exitoso - redirigir al home con mensaje de éxito
+            navigate("/", { 
+                state: { 
+                    message: `¡Registro exitoso! Bienvenido ${formData.name}. Ya puedes iniciar sesión.`,
+                    type: 'success'
+                } 
+            });
+        } catch (err) {
+            // Extraer mensaje de error del backend
+            const errorMsg = getErrorMessage(err);
+            setError(errorMsg);
+        } finally {
+            setIsLoading(false);
         }
-        
-        setIsLoading(false);
     };
 
     return (
         <div className="register-page">
             <div className="register-container">
-                <div className="register-card">
-                    <h2 className="register-title">
-                        <span className="green">Crea tu cuenta</span> en NeoBank
-                    </h2>
-                    <form className="register-form" onSubmit={handleRegister}>
-                        <label htmlFor="documentType">Tipo de documento</label>
-                        <select
-                            id="documentType"
-                            value={formData.documentType}
-                            onChange={(e) => handleInputChange('documentType', e.target.value)}
-                            required
-                        >
-                            <option value="CC">Cédula de ciudadanía</option>
-                            <option value="CE">Cédula de extranjería</option>
-                        </select>
-                        
-                        <label htmlFor="documentNumber">Número de documento</label>
-                        <input
-                            id="documentNumber"
-                            type="text"
-                            placeholder={`Escribe el número de documento (${formData.documentType === "CC" ? "10 dígitos" : "6-10 dígitos"})`}
-                            value={formData.documentNumber}
-                            onChange={(e) => handleInputChange('documentNumber', e.target.value)}
-                            required
-                            className={fieldErrors.documentNumber ? "error-field" : ""}
-                        />
-                        {fieldErrors.documentNumber && (
-                            <div className="field-error">{fieldErrors.documentNumber}</div>
-                        )}
-                        
-                        {formData.documentType === "CE" && (
-                            <>
-                                <label htmlFor="nationality">Nacionalidad</label>
-                                <select
-                                    id="nationality"
-                                    value={formData.nationality}
-                                    onChange={(e) => handleInputChange('nationality', e.target.value)}
-                                    required
-                                    className={fieldErrors.nationality ? "error-field" : ""}
-                                >
-                                    <option value="">Selecciona un país</option>
-                                    {countries.map(country => (
-                                        <option key={country} value={country}>{country}</option>
-                                    ))}
-                                </select>
-                                {fieldErrors.nationality && (
-                                    <div className="field-error">{fieldErrors.nationality}</div>
-                                )}
-                                
-                                <label htmlFor="residenceDate">Fecha de residencia en Colombia</label>
-                                <input
-                                    id="residenceDate"
-                                    type="date"
-                                    value={formData.residenceDate}
-                                    onChange={(e) => handleInputChange('residenceDate', e.target.value)}
-                                    max={new Date().toISOString().split('T')[0]}
-                                    required
-                                    className={fieldErrors.residenceDate ? "error-field" : ""}
-                                />
-                                {fieldErrors.residenceDate && (
-                                    <div className="field-error">{fieldErrors.residenceDate}</div>
-                                )}
-                            </>
-                        )}
-                        
-                        <label htmlFor="name">Nombre y primer apellido</label>
-                        <input
-                            id="name"
-                            type="text"
-                            placeholder="Ej: Juan López"
-                            value={formData.name}
-                            onChange={(e) => handleInputChange('name', e.target.value)}
-                            required
-                            className={fieldErrors.name ? "error-field" : ""}
-                        />
-                        {fieldErrors.name && (
-                            <div className="field-error">{fieldErrors.name}</div>
-                        )}
-                        
-                        <label htmlFor="email">Correo electrónico</label>
-                        <input
-                            id="email"
-                            type="email"
-                            placeholder="ejemplo@correo.com"
-                            value={formData.email}
-                            onChange={(e) => handleInputChange('email', e.target.value)}
-                            required
-                            className={fieldErrors.email ? "error-field" : ""}
-                        />
-                        {fieldErrors.email && (
-                            <div className="field-error">{fieldErrors.email}</div>
-                        )}
-                        
-                        <label htmlFor="phone">Número celular</label>
-                        <div className="phone-input-container">
-                            <div className="phone-prefix">+57</div>
-                            <input
-                                id="phone"
-                                type="text"
-                                placeholder="3001234567"
-                                value={formData.phone}
-                                onChange={(e) => handleInputChange('phone', e.target.value)}
-                                required
-                                className={fieldErrors.phone ? "error-field phone-input" : "phone-input"}
-                            />
-                        </div>
-                        {fieldErrors.phone && (
-                            <div className="field-error">{fieldErrors.phone}</div>
-                        )}
-                        
-                        <label htmlFor="password">Crea una clave (4 dígitos)</label>
-                        <input
-                            id="password"
-                            type="password"
-                            placeholder="Ej: 3648"
-                            value={formData.password}
-                            onChange={(e) => handleInputChange('password', e.target.value)}
-                            required
-                            maxLength="4"
-                            className={fieldErrors.password ? "error-field" : ""}
-                        />
-                        {fieldErrors.password && (
-                            <div className="field-error">{fieldErrors.password}</div>
-                        )}
-                        
-                        {error && <div className="register-error">{error}</div>}
-                        
-                        <button 
-                            className={`register-btn ${isLoading ? 'loading' : ''}`} 
-                            type="submit"
-                            disabled={isLoading}
-                        >
-                            {isLoading ? 'Registrando...' : 'Registrar'}
-                        </button>
-                    </form>
+                <div className="register-header-section">
+                    <h1>Únete a NeoBank</h1>
+                    <p>Crea tu cuenta en minutos y disfruta de la banca digital</p>
                 </div>
-
-                <div className="register-info">
-                    <h2>Banca digital 100% segura</h2>
-                    <div className="security-features">
-                        <div className="feature">
-                            <div className="feature-icon">🔒</div>
-                            <div>
-                                <h3>Encriptación avanzada</h3>
-                                <p>Tus datos están protegidos con la mejor tecnología</p>
-                            </div>
-                        </div>
-                        <div className="feature">
-                            <div className="feature-icon">📱</div>
-                            <div>
-                                <h3>Acceso 24/7</h3>
-                                <p>Consulta y opera desde cualquier dispositivo</p>
-                            </div>
-                        </div>
-                        <div className="feature">
-                            <div className="feature-icon">⚡</div>
-                            <div>
-                                <h3>Operaciones instantáneas</h3>
-                                <p>Transfiere y paga en tiempo real</p>
+                
+                <div className="register-content-grid">
+                    {/* LEFT SIDE - FEATURES */}
+                    <div className="register-features-left">
+                        <div className="register-info">
+                            <h3>Seguridad Garantizada</h3>
+                            <div className="security-features">
+                                <div className="feature">
+                                    <div className="feature-icon">🔒</div>
+                                    <div>
+                                        <h3>Encriptación avanzada</h3>
+                                        <p>Protección de nivel bancario</p>
+                                    </div>
+                                </div>
+                                <div className="feature">
+                                    <div className="feature-icon">📱</div>
+                                    <div>
+                                        <h3>Acceso 24/7</h3>
+                                        <p>Desde cualquier dispositivo</p>
+                                    </div>
+                                </div>
+                                <div className="feature">
+                                    <div className="feature-icon">⚡</div>
+                                    <div>
+                                        <h3>Operaciones instantáneas</h3>
+                                        <p>Transferencias en tiempo real</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    
+
+                    {/* CENTER - FORM */}
+                    <div className="register-card">
+                        <h2 className="register-title">
+                            <span className="green">Crea tu cuenta</span> en NeoBank
+                        </h2>
+                        <form className="register-form" onSubmit={handleRegister}>
+                                <label htmlFor="documentType">Tipo de documento</label>
+                            <select
+                                id="documentType"
+                                value={formData.documentType}
+                                onChange={(e) => handleInputChange('documentType', e.target.value)}
+                                required
+                            >
+                                <option value="CC">Cédula de ciudadanía</option>
+                                <option value="CE">Cédula de extranjería</option>
+                            </select>
+                            
+                            <label htmlFor="documentNumber">Número de documento</label>
+                            <input
+                                id="documentNumber"
+                                type="text"
+                                placeholder={`Escribe el número de documento (${formData.documentType === "CC" ? "7-10 dígitos" : "6-9 dígitos"})`}
+                                value={formData.documentNumber}
+                                onChange={(e) => handleInputChange('documentNumber', e.target.value)}
+                                required
+                                className={fieldErrors.documentNumber ? "error-field" : ""}
+                            />
+                            {fieldErrors.documentNumber && (
+                                <div className="field-error">{fieldErrors.documentNumber}</div>
+                            )}
+                            
+                            {formData.documentType === "CE" && (
+                                <>
+                                    <label htmlFor="nationality">Nacionalidad</label>
+                                    <select
+                                        id="nationality"
+                                        value={formData.nationality}
+                                        onChange={(e) => handleInputChange('nationality', e.target.value)}
+                                        required
+                                        className={fieldErrors.nationality ? "error-field" : ""}
+                                    >
+                                        <option value="">Selecciona un país</option>
+                                        {countries.map(country => (
+                                            <option key={country} value={country}>{country}</option>
+                                        ))}
+                                    </select>
+                                    {fieldErrors.nationality && (
+                                        <div className="field-error">{fieldErrors.nationality}</div>
+                                    )}
+                                    
+                                    <label htmlFor="residenceDate">Fecha de residencia en Colombia</label>
+                                    <input
+                                        id="residenceDate"
+                                        type="date"
+                                        value={formData.residenceDate}
+                                        onChange={(e) => handleInputChange('residenceDate', e.target.value)}
+                                        max={new Date().toISOString().split('T')[0]}
+                                        required
+                                        className={fieldErrors.residenceDate ? "error-field" : ""}
+                                    />
+                                    {fieldErrors.residenceDate && (
+                                        <div className="field-error">{fieldErrors.residenceDate}</div>
+                                    )}
+                                </>
+                            )}
+                            
+                            <label htmlFor="name">Nombre y primer apellido</label>
+                            <input
+                                id="name"
+                                type="text"
+                                placeholder="Ej: Juan López"
+                                value={formData.name}
+                                onChange={(e) => handleInputChange('name', e.target.value)}
+                                required
+                                className={fieldErrors.name ? "error-field" : ""}
+                            />
+                            {fieldErrors.name && (
+                                <div className="field-error">{fieldErrors.name}</div>
+                            )}
+                            
+                            <label htmlFor="email">Correo electrónico</label>
+                            <input
+                                id="email"
+                                type="email"
+                                placeholder="ejemplo@correo.com"
+                                value={formData.email}
+                                onChange={(e) => handleInputChange('email', e.target.value)}
+                                required
+                                className={fieldErrors.email ? "error-field" : ""}
+                            />
+                            {fieldErrors.email && (
+                                <div className="field-error">{fieldErrors.email}</div>
+                            )}
+                            
+                            <label htmlFor="phone">Número celular</label>
+                            <div className="phone-input-container">
+                                <div className="phone-prefix">+57</div>
+                                <input
+                                    id="phone"
+                                    type="text"
+                                    placeholder="3001234567"
+                                    value={formData.phone}
+                                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                                    required
+                                    className={fieldErrors.phone ? "error-field phone-input" : "phone-input"}
+                                />
+                            </div>
+                            {fieldErrors.phone && (
+                                <div className="field-error">{fieldErrors.phone}</div>
+                            )}
+                            
+                            <label htmlFor="password">Crea una clave (mínimo 8 caracteres)</label>
+                            <input
+                                id="password"
+                                type="password"
+                                placeholder="Ej: MiClave123"
+                                value={formData.password}
+                                onChange={(e) => handleInputChange('password', e.target.value)}
+                                required
+                                className={fieldErrors.password ? "error-field" : ""}
+                            />
+                            <small className="password-hint">
+                                Debe contener: mayúsculas, minúsculas y números
+                            </small>
+                            {fieldErrors.password && (
+                                <div className="field-error">{fieldErrors.password}</div>
+                            )}
+                            
+                            <label htmlFor="confirmPassword">Confirma tu clave</label>
+                            <input
+                                id="confirmPassword"
+                                type="password"
+                                placeholder=""
+                                value={formData.confirmPassword}
+                                onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                                required
+                                className={fieldErrors.confirmPassword ? "error-field" : ""}
+                            />
+                            {fieldErrors.confirmPassword && (
+                                <div className="field-error">{fieldErrors.confirmPassword}</div>
+                            )}
+                            
+                            {error && <div className="register-error">{error}</div>}
+                            
+                            <button 
+                                className={`register-btn ${isLoading ? 'loading' : ''}`} 
+                                type="submit"
+                                disabled={isLoading}
+                            >
+                                {isLoading ? 'Registrando...' : 'Registrar'}
+                            </button>
+                        </form>
+                    </div>
+
+                    {/* RIGHT SIDE - BENEFITS */}
                     <div className="register-benefits">
                         <h3>¿Por qué elegir NeoBank?</h3>
                         <ul>
@@ -349,6 +389,7 @@ const Register = () => {
                             <li>✅ Transferencias gratuitas</li>
                             <li>✅ Soporte 24/7</li>
                             <li>✅ Sin costos de manejo</li>
+                            <li>✅ Apertura 100% digital</li>
                         </ul>
                     </div>
                 </div>

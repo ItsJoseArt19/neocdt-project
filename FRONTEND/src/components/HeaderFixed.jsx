@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { loginUser, getErrorMessage } from "../utils/api";
 
 const HeaderNew = () => {
     // ===== ESTADOS DE LA APLICACIÓN =====
@@ -33,13 +34,13 @@ const HeaderNew = () => {
         switch(field) {
             case 'documentNumber':
                 if (loginData.documentType === "CC") {
-                    return /^\d{6,10}$/.test(value) ? "" : "Debe contener entre 6 y 10 dígitos numéricos";
+                    return /^\d{7,10}$/.test(value) ? "" : "Debe contener entre 7 y 10 dígitos numéricos";
                 } else {
-                    return /^\d{5,10}$/.test(value) ? "" : "Debe contener entre 6 y 10 dígitos numéricos";
+                    return /^\d{6,9}$/.test(value) ? "" : "Debe contener entre 6 y 9 dígitos numéricos";
                 }
             
             case 'password':
-                return /^\d{4}$/.test(value) ? "" : "Debe contener exactamente 4 dígitos numéricos";
+                return value.length >= 8 ? "" : "La contraseña debe tener mínimo 8 caracteres";
                 
             default:
                 return "";
@@ -76,6 +77,7 @@ const HeaderNew = () => {
     // ===== FUNCIÓN DE AUTENTICACIÓN =====
     const handleLogin = async (e) => {
         e.preventDefault();
+        setLoginError("");
         
         // Validar campos antes de intentar login
         const documentError = validateField('documentNumber', loginData.documentNumber);
@@ -86,41 +88,79 @@ const HeaderNew = () => {
                 documentNumber: documentError,
                 password: passwordError
             });
+            setLoginError("Por favor corrige los errores antes de continuar");
             return;
         }
         
         setIsLoading(true);
         
-        // Simular delay de red para mejor UX
-        await new Promise(resolve => setTimeout(resolve, 600));
-        
-        // Buscar usuario en localStorage
-        const users = JSON.parse(localStorage.getItem("users")) || [];
-        const user = users.find(
-            u => u.documentNumber === loginData.documentNumber && 
-                 u.password === loginData.password &&
-                 u.documentType === loginData.documentType
-        );
-        
-        // Validar credenciales
-        if (user) {
-            localStorage.setItem("currentUser", JSON.stringify(user));
-            setCurrentUser(user);
+        try {
+            // Llamar al API de login con documento
+            const response = await loginUser({
+                documentType: loginData.documentType,
+                documentNumber: loginData.documentNumber,
+                password: loginData.password
+            });
+
+            // Extraer datos de la respuesta
+            // Backend retorna: { status: "success", data: { user, accessToken, refreshToken } }
+            const responseData = response.data;
+            
+            if (!responseData || !responseData.accessToken || !responseData.refreshToken || !responseData.user) {
+                throw new Error('Respuesta inválida del servidor');
+            }
+
+            // Crear objeto de usuario con tokens incluidos para el interceptor
+            const userWithTokens = {
+                ...responseData.user,
+                accessToken: responseData.accessToken,
+                refreshToken: responseData.refreshToken
+            };
+
+            // Guardar usuario completo con tokens en localStorage
+            localStorage.setItem("currentUser", JSON.stringify(userWithTokens));
+
+            // Actualizar estado y cerrar formulario
+            setCurrentUser(userWithTokens);
             setShowLoginFields(false);
             setLoginError("");
-            navigate("/"); // Redirigir al home
-        } else {
-            setLoginError("Datos incorrectos. Verifica tu documento y clave.");
+            setFieldErrors({});
+            
+            // Redirigir al home con mensaje de bienvenida
+            navigate("/", { 
+                state: { 
+                    message: `¡Inicio de sesión exitoso! Bienvenido ${responseData.user.name}`,
+                    type: 'success'
+                } 
+            });
+
+        } catch (err) {
+            console.error("Error en login:", err);
+            const errorMsg = getErrorMessage(err);
+            setLoginError(errorMsg || "Credenciales inválidas. Verifica tu documento y contraseña.");
+        } finally {
+            setIsLoading(false);
         }
-        
-        setIsLoading(false);
     };
 
     const handleLogout = () => {
+        // Guardar el nombre del usuario antes de limpiar
+        const userName = currentUser?.name || 'Usuario';
+        
+        // Eliminar tokens y datos del usuario
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
         localStorage.removeItem("currentUser");
         setCurrentUser(null);
         setShowUserMenu(false);
-        navigate("/");
+        
+        // Redirigir con mensaje de despedida
+        navigate("/", {
+            state: {
+                message: `¡Hasta pronto ${userName}! Has cerrado sesión correctamente.`,
+                type: 'info'
+            }
+        });
     };
 
     const handleDropdownEnter = (dropdown) => {
@@ -144,16 +184,16 @@ const HeaderNew = () => {
             if (loginData.documentType === "CC" && value.length > 10) {
                 return; // No permitir más de 10 dígitos para CC
             }
+            if (loginData.documentType === "CE" && value.length > 9) {
+                return; // No permitir más de 9 dígitos para CE
+            }
             if (!/^\d*$/.test(value)) {
                 return; // Solo permitir dígitos
             }
-        } 
-        
-        if (field === 'password') {
-            if (!/^\d*$/.test(value) || value.length > 4) {
-                return; // Solo permitir hasta 4 dígitos en la clave
-            }
         }
+        
+        // No hay restricción en la contraseña durante la entrada
+        // Permitir cualquier carácter (letras, números, símbolos)
         
         // Actualizar el estado del formulario
         setLoginData(prev => ({
@@ -230,35 +270,35 @@ const HeaderNew = () => {
                                     <span className="nav-item">Cuentas</span>
                                     {activeDropdown === 'cuentas' && (
                                         <div className="dropdown-menu">
-                                            <button className="dropdown-item" disabled>
+                                            <button className="dropdown-item">
                                                 <div className="dropdown-icon">💳</div>
                                                 <div className="dropdown-content">
                                                     <span>Abre tu cuenta de ahorros</span>
                                                     <small>Costo $0</small>
                                                 </div>
                                             </button>
-                                            <button className="dropdown-item" disabled>
+                                            <button className="dropdown-item">
                                                 <div className="dropdown-icon">💰</div>
                                                 <div className="dropdown-content">
                                                     <span>Cuenta de ahorros (Nómina)</span>
                                                     <small>Costo $0</small>
                                                 </div>
                                             </button>
-                                            <button className="dropdown-item" disabled>
+                                            <button className="dropdown-item">
                                                 <div className="dropdown-icon">🏛️</div>
                                                 <div className="dropdown-content">
                                                     <span>Alcancía (Cuenta PAC)</span>
                                                     <small>Ahorra automáticamente</small>
                                                 </div>
                                             </button>
-                                            <button className="dropdown-item" disabled>
+                                            <button className="dropdown-item">
                                                 <div className="dropdown-icon">💳</div>
                                                 <div className="dropdown-content">
                                                     <span>Tarjeta débito</span>
                                                     <small>Disponible próximamente</small>
                                                 </div>
                                             </button>
-                                            <button className="dropdown-item" disabled>
+                                            <button className="dropdown-item">
                                                 <div className="dropdown-icon">🏪</div>
                                                 <div className="dropdown-content">
                                                     <span>Deposita plata gratis</span>
@@ -286,21 +326,21 @@ const HeaderNew = () => {
                                                     <small>Próximamente</small>
                                                 </div>
                                             </button>
-                                            <button className="dropdown-item" disabled>
+                                            <button className="dropdown-item">
                                                 <div className="dropdown-icon">💵</div>
                                                 <div className="dropdown-content">
                                                     <span>Avances en efectivo</span>
                                                     <small>Próximamente</small>
                                                 </div>
                                             </button>
-                                            <button className="dropdown-item" disabled>
+                                            <button className="dropdown-item">
                                                 <div className="dropdown-icon">💳</div>
                                                 <div className="dropdown-content">
                                                     <span>Tarjetas</span>
                                                     <small>Gestión de tarjetas</small>
                                                 </div>
                                             </button>
-                                            <button className="dropdown-item" disabled>
+                                            <button className="dropdown-item">
                                                 <div className="dropdown-icon">🏦</div>
                                                 <div className="dropdown-content">
                                                     <span>Paga tu crédito</span>
@@ -372,55 +412,55 @@ const HeaderNew = () => {
                                     {showLoginFields && (
                                         <div className="auth-form-container">
                                             <div className="auth-form">
-                                                <button 
-                                                    className="auth-form-close"
-                                                    onClick={toggleLoginFields}
-                                                >
-                                                    CERRAR ×
-                                                </button>
-                                                
-                                                <form onSubmit={handleLogin} className="login-form-inline">
-                                                    <div className="form-row">
-                                                        <select
-                                                            value={loginData.documentType}
-                                                            onChange={(e) => handleInputChange('documentType', e.target.value)}
-                                                            className="form-select"
-                                                            required
-                                                        >
-                                                            <option value="CC">Cédula Ciudadanía</option>
-                                                            <option value="CE">Cédula de Extranjería</option>
-                                                        </select>
-                                                        
-                                                        <input
-                                                            type="text"
-                                                            placeholder={`Número de documento (${loginData.documentType === "CC" ? "10 dígitos" : "6-9 dígitos"})`}
-                                                            value={loginData.documentNumber}
-                                                            onChange={(e) => handleInputChange('documentNumber', e.target.value)}
-                                                            className={`form-input ${fieldErrors.documentNumber ? 'error-input' : ''}`}
-                                                            required
-                                                        />
-                                                        
-                                                        <input
-                                                            type="password"
-                                                            placeholder="Clave (4 dígitos)"
-                                                            value={loginData.password}
-                                                            onChange={(e) => handleInputChange('password', e.target.value)}
-                                                            className={`form-input ${fieldErrors.password ? 'error-input' : ''}`}
-                                                            maxLength="4"
-                                                            required
-                                                        />
-                                                        
-                                                        <button 
-                                                            type="submit" 
-                                                            className={`btn-login ${isLoading ? 'loading' : ''}`}
-                                                            disabled={isLoading || !loginData.documentNumber || !loginData.password}
-                                                        >
-                                                            {isLoading ? '...' : 'Ingresar'}
-                                                        </button>
-                                                    </div>
-                                                </form>
-
-                                                {fieldErrors.documentNumber && (
+                                <button 
+                                    className="auth-form-close"
+                                    onClick={toggleLoginFields}
+                                    aria-label="Cerrar"
+                                >
+                                    ×
+                                </button>                                <form onSubmit={handleLogin} className="login-form-inline">
+                                    <div className="form-row">
+                                        <select
+                                            value={loginData.documentType}
+                                            onChange={(e) => handleInputChange('documentType', e.target.value)}
+                                            className="form-select"
+                                            required
+                                        >
+                                            <option value="CC">CC</option>
+                                            <option value="CE">CE</option>
+                                        </select>
+                                        
+                                        <input
+                                            type="text"
+                                            placeholder={`Número de documento (${loginData.documentType === "CC" ? "7-10 dígitos" : "6-9 dígitos"})`}
+                                            value={loginData.documentNumber}
+                                            onChange={(e) => handleInputChange('documentNumber', e.target.value)}
+                                            className={`form-input ${fieldErrors.documentNumber ? 'error-input' : ''}`}
+                                            required
+                                        />
+                                    </div>
+                                    
+                                    <div className="form-row">
+                                        <input
+                                            type="password"
+                                            placeholder="Contraseña (mínimo 8 caracteres)"
+                                            value={loginData.password}
+                                            onChange={(e) => handleInputChange('password', e.target.value)}
+                                            className={`form-input ${fieldErrors.password ? 'error-input' : ''}`}
+                                            required
+                                        />
+                                    </div>
+                                    
+                                    <div className="form-row">
+                                        <button 
+                                            type="submit" 
+                                            className={`btn-login ${isLoading ? 'loading' : ''}`}
+                                            disabled={isLoading || !loginData.documentNumber || !loginData.password}
+                                        >
+                                            {isLoading ? '' : 'Ingresar'}
+                                        </button>
+                                    </div>
+                                </form>                                                {fieldErrors.documentNumber && (
                                                     <div className="field-error-inline">{fieldErrors.documentNumber}</div>
                                                 )}
                                                 
@@ -477,6 +517,11 @@ const HeaderNew = () => {
                                                 >
                                                     Mis Productos
                                                 </button>
+                                                {currentUser.role === 'admin' && (
+                                                    <Link to="/admin/solicitudes" className="user-action admin-link">
+                                                        🏛️ Panel Admin
+                                                    </Link>
+                                                )}
                                                 <button className="user-action">Configuración</button>
                                                 <button 
                                                     className="user-action logout"
