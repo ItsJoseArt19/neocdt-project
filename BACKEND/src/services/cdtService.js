@@ -118,17 +118,58 @@ class CDTService {
       throw error;
     }
 
-    const normalizedData = {
-      ...updateData,
-      term_days: updateData.termDays
-    };
-    delete normalizedData.termDays;
+    // Normalizar datos: convertir camelCase a snake_case y filtrar undefined/null
+    const normalizedData = {};
+    
+    if (updateData.amount !== undefined && updateData.amount !== null) {
+      normalizedData.amount = updateData.amount;
+    }
+    
+    // Aceptar tanto termDays (camelCase) como term_days (snake_case)
+    const termDaysValue = updateData.termDays ?? updateData.term_days;
+    if (termDaysValue !== undefined && termDaysValue !== null) {
+      normalizedData.term_days = termDaysValue;
+    }
+    
+    // Aceptar tanto interestRate (camelCase) como interest_rate (snake_case)
+    const interestRateValue = updateData.interestRate ?? updateData.interest_rate;
+    if (interestRateValue !== undefined && interestRateValue !== null) {
+      normalizedData.interest_rate = interestRateValue;
+    }
+    
+    // Aceptar tanto startDate (camelCase) como start_date (snake_case)
+    const startDateValue = updateData.startDate ?? updateData.start_date;
+    if (startDateValue !== undefined && startDateValue !== null) {
+      normalizedData.start_date = startDateValue;
+    }
+    
+    // Aceptar tanto endDate (camelCase) como end_date (snake_case)
+    const endDateValue = updateData.endDate ?? updateData.end_date;
+    if (endDateValue !== undefined && endDateValue !== null) {
+      normalizedData.end_date = endDateValue;
+    }
+    
+    // Aceptar tanto renovationOption (camelCase) como renovation_option (snake_case)
+    const renovationOptionValue = updateData.renovationOption ?? updateData.renovation_option;
+    if (renovationOptionValue !== undefined && renovationOptionValue !== null) {
+      normalizedData.renovation_option = renovationOptionValue;
+    }
+
+    // Si no hay campos válidos para actualizar
+    if (Object.keys(normalizedData).length === 0) {
+      const error = new Error('No se proporcionaron campos válidos para actualizar');
+      error.statusCode = 400;
+      throw error;
+    }
 
     const updatedCDT = CDT.update(cdtId, normalizedData);
-    CDT.createAuditLog(cdtId, 'actualizado', { updateData });
+    CDT.createAuditLog(cdtId, 'actualizado', { updateData: normalizedData });
 
+    // Invalidar TODOS los cachés relevantes
     cache.delete(`cdt:${cdtId}`);
     cache.invalidatePattern(`cdts:user:${userId}:*`);
+    cache.invalidatePattern('cdts:all:*');
+    cache.delete('admin_stats');
 
     logger.info(`CDT updated: ${cdtId}`);
     return updatedCDT;
@@ -166,8 +207,12 @@ class CDTService {
     CDT.updateStatus(cdtId, newStatus, reason);
     CDT.createAuditLog(cdtId, 'estado_cambio', { newStatus, reason });
 
+    // Invalidar TODOS los cachés relevantes
     cache.delete(`cdt:${cdtId}`);
     cache.invalidatePattern(`cdts:user:${cdt.userId}:*`);
+    cache.invalidatePattern('cdts:all:*');
+    cache.delete('admin_stats');
+    cache.delete('pending_cdts');
 
     const updatedCDT = CDT.findById(cdtId);
 
@@ -185,9 +230,14 @@ class CDTService {
 
     const cancelledCDT = CDT.cancel(cdtId, userId, userRole, reason);
 
+    // Invalidar TODOS los cachés relevantes
+    cache.delete(`cdt:${cdtId}`);
     cache.delete('user_cdts_' + userId);
     cache.delete('all_cdts');
     cache.delete('pending_cdts');
+    cache.delete('admin_stats');
+    cache.invalidatePattern(`cdts:user:${userId}:*`);
+    cache.invalidatePattern('cdts:all:*');
 
     logger.info(`CDT cancelled: ${cdtId}`);
     return cancelledCDT;
@@ -224,8 +274,12 @@ class CDTService {
 
       CDT.deleteById(cdtId);
 
+      // Invalidar TODOS los cachés relevantes
       cache.delete(`cdt:${cdtId}`);
       cache.invalidatePattern(`cdts:user:${cdt.userId}:*`);
+      cache.invalidatePattern('cdts:all:*');
+      cache.delete('admin_stats');
+      cache.delete('pending_cdts');
 
       logger.info(`CDT deleted: ${cdtId}`);
     });
@@ -234,8 +288,13 @@ class CDTService {
   submitCDTForReview(cdtId, userId) {
     const submittedCDT = CDT.submitForReview(cdtId, userId);
 
+    // Invalidar TODOS los cachés relevantes
     cache.delete(`cdt:${cdtId}`);
     cache.delete('user_cdts_' + userId);
+    cache.invalidatePattern(`cdts:user:${userId}:*`);
+    cache.invalidatePattern('cdts:all:*');
+    cache.delete('pending_cdts');
+    cache.delete('admin_stats');
 
     logger.info(`CDT submitted for review: ${cdtId}`);
     return submittedCDT;
@@ -244,8 +303,13 @@ class CDTService {
   approveCDT(cdtId, adminId, notes) {
     const approvedCDT = CDT.approve(cdtId, adminId, notes);
 
+    // Invalidar TODOS los cachés relevantes
     if (approvedCDT?.userId) {
+      cache.delete(`cdt:${cdtId}`);
       cache.invalidatePattern(`cdts:user:${approvedCDT.userId}:*`);
+      cache.invalidatePattern('cdts:all:*');
+      cache.delete('pending_cdts');
+      cache.delete('admin_stats');
     }
 
     logger.info(`CDT approved: ${cdtId}`);
@@ -262,8 +326,13 @@ class CDTService {
 
     const rejectedCDT = CDT.reject(cdtId, adminId, rejectionNotes);
 
+    // Invalidar TODOS los cachés relevantes
     if (rejectedCDT?.userId) {
+      cache.delete(`cdt:${cdtId}`);
       cache.invalidatePattern(`cdts:user:${rejectedCDT.userId}:*`);
+      cache.invalidatePattern('cdts:all:*');
+      cache.delete('pending_cdts');
+      cache.delete('admin_stats');
     }
 
     logger.info(`CDT rejected: ${cdtId}`);

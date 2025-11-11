@@ -3,22 +3,51 @@
    ========================================= */
 
 .home-container {
-    padding-top: 110px; /* Altura del header completo (top bar 40px + main header 70px) */
     min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    display: block;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.home-container.layout-ready {
+    /* Clase que se agrega cuando el layout está listo */
+    opacity: 1;
 }
 
 /* ===== HERO CAROUSEL ===== */
 .hero-carousel {
     width: 100%;
     overflow: hidden;
+    margin: 0;
+    padding: 0;
+    padding-top: 110px; /* Altura del header completo (top bar 40px + main header 70px) */
+    position: relative;
+    left: 0;
+    right: 0;
+    background: transparent;
+    will-change: auto;
+    transform: translateZ(0); /* Forzar aceleración por hardware */
+    /* Asegurar que siempre tenga el padding correcto */
+    min-height: calc(70vh + 110px);
 }
 
 .carousel-container {
     position: relative;
     width: 100%;
-    height: 85vh;
-    min-height: 600px;
+    height: 70vh; /* Reducido de 100vh a 70vh para mejor visualización */
+    min-height: 500px;
+    max-height: 650px; /* Altura máxima para pantallas muy grandes */
     overflow: hidden;
+    margin: 0;
+    padding: 0;
+    display: block;
+    top: 0;
+    left: 0;
+    transform: translateZ(0); /* Forzar aceleración por hardware */
+    contain: layout style paint; /* Optimización de rendering */
+    content-visibility: auto;
 }
 
 .carousel-slide {
@@ -195,6 +224,8 @@
 .features {
     padding: 5rem 0;
     background: var(--gray-50);
+    position: relative;
+    z-index: 2;
 }
 
 .features-container {
@@ -352,9 +383,14 @@
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
+    .hero-carousel {
+        padding-top: 110px;
+    }
+    
     .carousel-container {
-        height: 70vh;
-        min-height: 500px;
+        height: 65vh;
+        min-height: 450px;
+        max-height: 550px;
     }
     
     .slide-content h1 {
@@ -382,12 +418,18 @@
 
 @media (max-width: 768px) {
     .home-container {
-        padding-top: 100px; /* Menos padding en móvil (sin top bar) */
+        margin: 0;
+        padding: 0;
+    }
+    
+    .hero-carousel {
+        padding-top: 100px; /* Menos altura en móvil (sin top bar 40px + header 60px) */
     }
     
     .carousel-container {
-        height: 60vh;
-        min-height: 450px;
+        height: 55vh;
+        min-height: 400px;
+        max-height: 500px;
     }
     
     .slide-content h1 {
@@ -422,10 +464,6 @@
     
     .carousel-dots {
         bottom: 2rem;
-    }
-    
-    .features {
-        padding: 3rem 0;
     }
     
     .features h2 {

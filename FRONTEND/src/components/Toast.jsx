@@ -17,10 +17,12 @@ const Toast = ({ message, type = 'success', duration = 4000, onClose }) => {
     };
 
     return (
-        <div className={`toast toast-${type}`}>
-            <div className="toast-icon">{icons[type]}</div>
-            <div className="toast-message">{message}</div>
-            <button className="toast-close" onClick={onClose}>×</button>
+        <div className="toast-container">
+            <div className={`toast toast-${type}`}>
+                <div className="toast-icon">{icons[type]}</div>
+                <div className="toast-message">{message}</div>
+                <button className="toast-close" onClick={onClose}>×</button>
+            </div>
         </div>
     );
 };

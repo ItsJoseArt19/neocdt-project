@@ -122,6 +122,7 @@ export const validateUpdateCDT = [
       return true;
     }),
 
+  // Aceptar tanto termDays (camelCase) como term_days (snake_case)
   body('termDays')
     .optional()
     .isInt({ min: CDT_RULES.term.minDays, max: CDT_RULES.term.maxDays })
@@ -137,7 +138,38 @@ export const validateUpdateCDT = [
       return true;
     }),
 
+  body('term_days')
+    .optional()
+    .isInt({ min: CDT_RULES.term.minDays, max: CDT_RULES.term.maxDays })
+    .withMessage(`El plazo debe estar entre ${CDT_RULES.term.minDays} y ${CDT_RULES.term.maxDays} días`)
+    .toInt()
+    .custom((value) => {
+      if (value) {
+        const validation = validateCDTTerm(value);
+        if (!validation.valid) {
+          throw new Error(validation.error);
+        }
+      }
+      return true;
+    }),
+
+  // Aceptar tanto interestRate (camelCase) como interest_rate (snake_case)
   body('interestRate')
+    .optional()
+    .isFloat({ min: CDT_RULES.interestRate.min, max: CDT_RULES.interestRate.max })
+    .withMessage(`La tasa debe estar entre ${CDT_RULES.interestRate.min}% y ${CDT_RULES.interestRate.max}% EA`)
+    .toFloat()
+    .custom((value) => {
+      if (value) {
+        const validation = validateInterestRate(value);
+        if (!validation.valid) {
+          throw new Error(validation.error);
+        }
+      }
+      return true;
+    }),
+
+  body('interest_rate')
     .optional()
     .isFloat({ min: CDT_RULES.interestRate.min, max: CDT_RULES.interestRate.max })
     .withMessage(`La tasa debe estar entre ${CDT_RULES.interestRate.min}% y ${CDT_RULES.interestRate.max}% EA`)

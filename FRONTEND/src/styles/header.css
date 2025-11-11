@@ -7,7 +7,7 @@
 .header-sup {
     background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
     color: white;
-    padding: 10px 0;
+    padding: 0;
     font-size: 0.875rem;
     position: fixed;
     top: 0;
@@ -15,6 +15,13 @@
     right: 0;
     z-index: 1001;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 40px; /* Altura FIJA */
+    line-height: 40px; /* Centrar verticalmente */
+    will-change: auto;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    min-height: 40px;
+    max-height: 40px;
 }
 
 .header-sup-content {
@@ -24,6 +31,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    height: 100%; /* Ocupar toda la altura del padre */
 }
 
 .header-links-left {
@@ -61,6 +69,12 @@
     right: 0;
     z-index: 1000;
     background: white;
+    will-change: auto;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    height: 110px; /* Altura TOTAL FIJA (40px top bar + 70px main) */
+    min-height: 110px;
+    max-height: 110px;
 }
 
 .header-main {
@@ -68,6 +82,10 @@
     border-bottom: 1px solid var(--gray-200);
     margin-top: 40px; /* Espacio para el top bar */
     box-shadow: 0 4px 12px rgba(52, 168, 83, 0.1);
+    will-change: auto;
+    height: 70px; /* Altura FIJA */
+    min-height: 70px;
+    max-height: 70px;
 }
 
 .header-container {
@@ -80,9 +98,11 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 70px;
+    height: 70px; /* Altura FIJA */
+    min-height: 70px;
+    max-height: 70px;
     gap: 2rem;
-    padding: 1rem 0;
+    padding: 0; /* Quitar padding vertical */
 }
 
 /* ===== LOGO ===== */
@@ -229,6 +249,10 @@
 .header-auth {
     position: relative;
     flex-shrink: 0;
+    height: 100%; /* Ocupar toda la altura disponible */
+    display: flex;
+    align-items: center;
+    min-width: 150px; /* Ancho mínimo para evitar cambios de layout */
 }
 
 /* Botón de Banca en Línea */
@@ -261,7 +285,7 @@
 /* Formulario de Login Inline */
 .auth-form-container {
     position: absolute;
-    top: calc(100% + 0.75rem);
+    top: 100%; /* Justo debajo del header */
     right: 0;
     background: white;
     border-radius: var(--radius-xl);
@@ -272,6 +296,9 @@
     z-index: 1003;
     animation: slideDown 0.3s ease-out;
     border: 2px solid var(--primary-color);
+    margin-top: 0.75rem;
+    will-change: transform, opacity;
+    transform: translateZ(0);
 }
 
 .auth-form {
@@ -309,6 +336,10 @@
     margin-bottom: 1rem;
 }
 
+.login-form-stacked {
+    margin-bottom: 1rem;
+}
+
 .form-row {
     display: grid;
     grid-template-columns: 80px 1fr;
@@ -318,6 +349,82 @@
 
 .form-row:last-child {
     grid-template-columns: 1fr;
+}
+
+/* Estilos para formulario apilado */
+.form-row-stacked {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.form-row-full {
+    display: flex;
+    margin-bottom: 0.75rem;
+    margin-left: calc(80px + 0.75rem); /* Alinear con el input del documento */
+}
+
+.form-row-full:has(.btn-login) {
+    margin-left: 0; /* Centrar el botón sin margen izquierdo */
+    justify-content: center;
+}
+
+.form-input-doc {
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    font-size: 0.9375rem;
+    transition: all 0.2s;
+    width: 100%;
+}
+
+.form-input-doc:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.15);
+}
+
+.form-input-doc:hover {
+    border-color: var(--primary-light);
+}
+
+.form-input-doc.error-input {
+    border-color: var(--error-color);
+    background: rgba(239, 83, 80, 0.03);
+}
+
+.form-input-doc.error-input:focus {
+    box-shadow: 0 0 0 3px rgba(239, 83, 80, 0.15);
+}
+
+.form-input-full {
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    font-size: 0.9375rem;
+    transition: all 0.2s;
+    width: 100%;
+    flex: 1;
+}
+
+.form-input-full:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.15);
+}
+
+.form-input-full:hover {
+    border-color: var(--primary-light);
+}
+
+.form-input-full.error-input {
+    border-color: var(--error-color);
+    background: rgba(239, 83, 80, 0.03);
+}
+
+.form-input-full.error-input:focus {
+    box-shadow: 0 0 0 3px rgba(239, 83, 80, 0.15);
 }
 
 .form-select {
@@ -564,7 +671,7 @@
 
 .user-dropdown {
     position: absolute;
-    top: calc(100% + 0.75rem);
+    top: 100%; /* Justo debajo del botón */
     right: 0;
     background: white;
     border-radius: var(--radius-xl);
@@ -574,6 +681,9 @@
     animation: slideDownBounce 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     overflow: hidden;
     border: 2px solid var(--primary-color);
+    margin-top: 0.75rem;
+    will-change: transform, opacity;
+    transform: translateZ(0);
 }
 
 @keyframes slideDownBounce {

@@ -14,6 +14,24 @@ const Home = () => {
     // ===== ESTADOS DEL CARRUSEL =====
     const [currentSlide, setCurrentSlide] = useState(0); // Slide actual
     const [isPaused, setIsPaused] = useState(false); // Control de pausa automática
+    const [isLayoutReady, setIsLayoutReady] = useState(false); // Estado para controlar el layout
+
+    // ===== FORZAR LAYOUT CORRECTO AL MONTAR =====
+    useEffect(() => {
+        // Forzar reflow del navegador para evitar el espacio en blanco
+        const forceReflow = () => {
+            // Trigger reflow
+            document.body.offsetHeight;
+            window.scrollTo(0, 0);
+            setIsLayoutReady(true);
+        };
+
+        // Ejecutar inmediatamente y después de un pequeño delay
+        forceReflow();
+        const timer = setTimeout(forceReflow, 50);
+        
+        return () => clearTimeout(timer);
+    }, []);
 
     // ===== CONFIGURACIÓN DE SLIDES =====
     const slides = [
@@ -95,7 +113,7 @@ const Home = () => {
     };
 
     return (
-        <div className="home-container">
+        <div className={`home-container ${isLayoutReady ? 'layout-ready' : ''}`}>
             {/* ===== CARRUSEL PRINCIPAL ===== */}
             <div className="hero-carousel">
                 <section 

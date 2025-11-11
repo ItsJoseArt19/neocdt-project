@@ -1,10 +1,11 @@
 /* ===== TOAST NOTIFICATIONS ===== */
 .toast-container {
     position: fixed;
-    top: 100px;
+    top: 120px; /* Debajo del header (110px) + 10px de espacio */
     right: 20px;
     z-index: 9999;
     pointer-events: none;
+    max-width: 500px;
 }
 
 .toast {
@@ -33,7 +34,8 @@
     right: 0;
     height: 3px;
     background: currentColor;
-    animation: shrink 5s linear;
+    animation: shrink 4s linear;
+    transform-origin: left;
 }
 
 @keyframes slideInRight {

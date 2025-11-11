@@ -270,35 +270,35 @@ const HeaderNew = () => {
                                     <span className="nav-item">Cuentas</span>
                                     {activeDropdown === 'cuentas' && (
                                         <div className="dropdown-menu">
-                                            <button className="dropdown-item" disabled>
+                                            <button className="dropdown-item">
                                                 <div className="dropdown-icon">💳</div>
                                                 <div className="dropdown-content">
                                                     <span>Abre tu cuenta de ahorros</span>
                                                     <small>Costo $0</small>
                                                 </div>
                                             </button>
-                                            <button className="dropdown-item" disabled>
+                                            <button className="dropdown-item">
                                                 <div className="dropdown-icon">💰</div>
                                                 <div className="dropdown-content">
                                                     <span>Cuenta de ahorros (Nómina)</span>
                                                     <small>Costo $0</small>
                                                 </div>
                                             </button>
-                                            <button className="dropdown-item" disabled>
+                                            <button className="dropdown-item">
                                                 <div className="dropdown-icon">🏛️</div>
                                                 <div className="dropdown-content">
                                                     <span>Alcancía (Cuenta PAC)</span>
                                                     <small>Ahorra automáticamente</small>
                                                 </div>
                                             </button>
-                                            <button className="dropdown-item" disabled>
+                                            <button className="dropdown-item">
                                                 <div className="dropdown-icon">💳</div>
                                                 <div className="dropdown-content">
                                                     <span>Tarjeta débito</span>
                                                     <small>Disponible próximamente</small>
                                                 </div>
                                             </button>
-                                            <button className="dropdown-item" disabled>
+                                            <button className="dropdown-item">
                                                 <div className="dropdown-icon">🏪</div>
                                                 <div className="dropdown-content">
                                                     <span>Deposita plata gratis</span>
@@ -326,21 +326,21 @@ const HeaderNew = () => {
                                                     <small>Próximamente</small>
                                                 </div>
                                             </button>
-                                            <button className="dropdown-item" disabled>
+                                            <button className="dropdown-item">
                                                 <div className="dropdown-icon">💵</div>
                                                 <div className="dropdown-content">
                                                     <span>Avances en efectivo</span>
                                                     <small>Próximamente</small>
                                                 </div>
                                             </button>
-                                            <button className="dropdown-item" disabled>
+                                            <button className="dropdown-item">
                                                 <div className="dropdown-icon">💳</div>
                                                 <div className="dropdown-content">
                                                     <span>Tarjetas</span>
                                                     <small>Gestión de tarjetas</small>
                                                 </div>
                                             </button>
-                                            <button className="dropdown-item" disabled>
+                                            <button className="dropdown-item">
                                                 <div className="dropdown-icon">🏦</div>
                                                 <div className="dropdown-content">
                                                     <span>Paga tu crédito</span>
@@ -418,8 +418,8 @@ const HeaderNew = () => {
                                     aria-label="Cerrar"
                                 >
                                     ×
-                                </button>                                <form onSubmit={handleLogin} className="login-form-inline">
-                                    <div className="form-row">
+                                </button>                                <form onSubmit={handleLogin} className="login-form-stacked">
+                                    <div className="form-row-stacked">
                                         <select
                                             value={loginData.documentType}
                                             onChange={(e) => handleInputChange('documentType', e.target.value)}
@@ -435,23 +435,23 @@ const HeaderNew = () => {
                                             placeholder={`Número de documento (${loginData.documentType === "CC" ? "7-10 dígitos" : "6-9 dígitos"})`}
                                             value={loginData.documentNumber}
                                             onChange={(e) => handleInputChange('documentNumber', e.target.value)}
-                                            className={`form-input ${fieldErrors.documentNumber ? 'error-input' : ''}`}
+                                            className={`form-input-doc ${fieldErrors.documentNumber ? 'error-input' : ''}`}
                                             required
                                         />
                                     </div>
                                     
-                                    <div className="form-row">
+                                    <div className="form-row-full">
                                         <input
                                             type="password"
                                             placeholder="Contraseña (mínimo 8 caracteres)"
                                             value={loginData.password}
                                             onChange={(e) => handleInputChange('password', e.target.value)}
-                                            className={`form-input ${fieldErrors.password ? 'error-input' : ''}`}
+                                            className={`form-input-full ${fieldErrors.password ? 'error-input' : ''}`}
                                             required
                                         />
                                     </div>
                                     
-                                    <div className="form-row">
+                                    <div className="form-row-full">
                                         <button 
                                             type="submit" 
                                             className={`btn-login ${isLoading ? 'loading' : ''}`}
