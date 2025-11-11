@@ -270,35 +270,35 @@ const HeaderNew = () => {
                                     <span className="nav-item">Cuentas</span>
                                     {activeDropdown === 'cuentas' && (
                                         <div className="dropdown-menu">
-                                            <button className="dropdown-item" disabled>
+                                            <button className="dropdown-item">
                                                 <div className="dropdown-icon">💳</div>
                                                 <div className="dropdown-content">
                                                     <span>Abre tu cuenta de ahorros</span>
                                                     <small>Costo $0</small>
                                                 </div>
                                             </button>
-                                            <button className="dropdown-item" disabled>
+                                            <button className="dropdown-item">
                                                 <div className="dropdown-icon">💰</div>
                                                 <div className="dropdown-content">
                                                     <span>Cuenta de ahorros (Nómina)</span>
                                                     <small>Costo $0</small>
                                                 </div>
                                             </button>
-                                            <button className="dropdown-item" disabled>
+                                            <button className="dropdown-item">
                                                 <div className="dropdown-icon">🏛️</div>
                                                 <div className="dropdown-content">
                                                     <span>Alcancía (Cuenta PAC)</span>
                                                     <small>Ahorra automáticamente</small>
                                                 </div>
                                             </button>
-                                            <button className="dropdown-item" disabled>
+                                            <button className="dropdown-item">
                                                 <div className="dropdown-icon">💳</div>
                                                 <div className="dropdown-content">
                                                     <span>Tarjeta débito</span>
                                                     <small>Disponible próximamente</small>
                                                 </div>
                                             </button>
-                                            <button className="dropdown-item" disabled>
+                                            <button className="dropdown-item">
                                                 <div className="dropdown-icon">🏪</div>
                                                 <div className="dropdown-content">
                                                     <span>Deposita plata gratis</span>
@@ -326,21 +326,21 @@ const HeaderNew = () => {
                                                     <small>Próximamente</small>
                                                 </div>
                                             </button>
-                                            <button className="dropdown-item" disabled>
+                                            <button className="dropdown-item">
                                                 <div className="dropdown-icon">💵</div>
                                                 <div className="dropdown-content">
                                                     <span>Avances en efectivo</span>
                                                     <small>Próximamente</small>
                                                 </div>
                                             </button>
-                                            <button className="dropdown-item" disabled>
+                                            <button className="dropdown-item">
                                                 <div className="dropdown-icon">💳</div>
                                                 <div className="dropdown-content">
                                                     <span>Tarjetas</span>
                                                     <small>Gestión de tarjetas</small>
                                                 </div>
                                             </button>
-                                            <button className="dropdown-item" disabled>
+                                            <button className="dropdown-item">
                                                 <div className="dropdown-icon">🏦</div>
                                                 <div className="dropdown-content">
                                                     <span>Paga tu crédito</span>
